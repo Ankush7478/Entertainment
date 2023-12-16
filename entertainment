@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract EntertainmentPlatform {
+    address public adminAddress;
+    mapping(address => bool) public hasBoughtTicket;
+    mapping(address => uint) public movieRatings;
+
+    event TicketBought(address indexed viewer);
+    event MovieRated(address indexed viewer, uint rating);
+
+    constructor() {
+        adminAddress = msg.sender;
+    }
+
+    function buyTicket() public {
+        require(!hasBoughtTicket[msg.sender], "Ticket already purchased");
+        assert(!hasBoughtTicket[msg.sender]);
+
+        hasBoughtTicket[msg.sender] = true;
+        emit TicketBought(msg.sender);
+    }
+
+   function rateEntertainment(uint rating) public {
+    require(hasBoughtTicket[msg.sender], "Must buy a ticket to rate");
+    assert(rating >= 1 && rating <= 5); // Add semicolon at the end
+
+    movieRatings[msg.sender] = rating;
+    emit MovieRated(msg.sender, rating);
+}
+
+    function checkTicketStatus(address viewer) public view returns (bool) {
+        if (!hasBoughtTicket[viewer]) {
+            revert("You haven't made any ticket purchase");
+        }
+        return true;
+    }
+}
